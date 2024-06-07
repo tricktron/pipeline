@@ -114,27 +114,27 @@ var DefaultFeatureFlags, _ = NewFeatureFlagsFromMap(map[string]string{})
 //
 //nolint:musttag
 type FeatureFlags struct {
-	DisableAffinityAssistant         bool
-	DisableCredsInit                 bool
-	RunningInEnvWithInjectedSidecars bool
-	RequireGitSSHSecretKnownHosts    bool
-	EnableTektonOCIBundles           bool
-	ScopeWhenExpressionsToTask       bool
-	EnableAPIFields                  string
-	SendCloudEventsForRuns           bool
-	AwaitSidecarReadiness            bool
-	EnforceNonfalsifiability         string
+	disableAffinityAssistant         bool
+	disableCredsInit                 bool
+	runningInEnvWithInjectedSidecars bool
+	requireGitSSHSecretKnownHosts    bool
+	enableTektonOCIBundles           bool
+	scopeWhenExpressionsToTask       bool
+	enableAPIFields                  string
+	sendCloudEventsForRuns           bool
+	awaitSidecarReadiness            bool
+	enforceNonfalsifiability         string
 	// VerificationNoMatchPolicy is the feature flag for "trusted-resources-verification-no-match-policy"
 	// VerificationNoMatchPolicy can be set to "ignore", "warn" and "fail" values.
 	// ignore: skip trusted resources verification when no matching verification policies found
 	// warn: skip trusted resources verification when no matching verification policies found and log a warning
 	// fail: fail the taskrun or pipelines run if no matching verification policies found
-	VerificationNoMatchPolicy string
-	EnableProvenanceInStatus  bool
-	ResultExtractionMethod    string
-	MaxResultSize             int
-	SetSecurityContext        bool
-	Coschedule                string
+	verificationNoMatchPolicy string
+	enableProvenanceInStatus  bool
+	resultExtractionMethod    string
+	maxResultSize             int
+	setSecurityContext        bool
+	coschedule                string
 }
 
 // GetFeatureFlagsConfigName returns the name of the configmap containing all
