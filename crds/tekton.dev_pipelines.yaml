@@ -80,67 +80,31 @@ spec:
                             passing in specific combinations of Parameters into the
                             Matrix.
                           items:
-                            description: IncludeParamsList is a list of IncludeParams
-                              which allows passing in specific combinations of Parameters
-                              into the Matrix.
-                            items:
-                              description: IncludeParams allows passing in a specific
-                                combinations of Parameters into the Matrix.
-                              properties:
-                                name:
-                                  description: Name the specified combination
-                                  type: string
-                                params:
-                                  description: |-
-                                    Params takes only `Parameters` of type `"string"`
-                                    The names of the `params` must match the names of the `params` in the underlying `Task`
-                                  items:
-                                    description: Params is a list of Param
-                                    items:
-                                      description: Param declares an ParamValues to
-                                        use for the parameter called name.
-                                      properties:
-                                        name:
-                                          type: string
-                                        value:
-                                          description: |-
-                                            ParamValue is a type that can hold a single string, string array, or string map.
-                                            Used in JSON unmarshalling so that a single JSON field can accept
-                                            either an individual string or an array of strings.
-                                          properties:
-                                            arrayVal:
-                                              items:
-                                                type: string
-                                              type: array
-                                              x-kubernetes-list-type: atomic
-                                            objectVal:
-                                              additionalProperties:
-                                                type: string
-                                              type: object
-                                            stringVal:
-                                              type: string
-                                            type:
-                                              description: |-
-                                                ParamType indicates the type of an input parameter;
-                                                Used to distinguish between a single string and an array of strings.
-                                              type: string
-                                          required:
-                                          - arrayVal
-                                          - objectVal
-                                          - stringVal
-                                          - type
-                                          type: object
-                                      required:
-                                      - name
-                                      - value
-                                      type: object
-                                    type: array
-                                  type: array
-                                  x-kubernetes-list-type: atomic
-                              type: object
-                            type: array
+                            description: IncludeParams allows passing in a specific
+                              combinations of Parameters into the Matrix.
+                            properties:
+                              name:
+                                description: Name the specified combination
+                                type: string
+                              params:
+                                description: |-
+                                  Params takes only `Parameters` of type `"string"`
+                                  The names of the `params` must match the names of the `params` in the underlying `Task`
+                                items:
+                                  description: Param declares an ParamValues to use
+                                    for the parameter called name.
+                                  properties:
+                                    name:
+                                      type: string
+                                    value:
+                                      x-kubernetes-preserve-unknown-fields: true
+                                  required:
+                                  - name
+                                  - value
+                                  type: object
+                                type: array
+                            type: object
                           type: array
-                          x-kubernetes-list-type: atomic
                         params:
                           description: |-
                             Params is a list of parameters used to fan out the pipelineTask
@@ -148,48 +112,18 @@ spec:
                             Each array element is supplied to the `PipelineTask` by substituting `params` of type `"string"` in the underlying `Task`.
                             The names of the `params` in the `Matrix` must match the names of the `params` in the underlying `Task` that they will be substituting.
                           items:
-                            description: Params is a list of Param
-                            items:
-                              description: Param declares an ParamValues to use for
-                                the parameter called name.
-                              properties:
-                                name:
-                                  type: string
-                                value:
-                                  description: |-
-                                    ParamValue is a type that can hold a single string, string array, or string map.
-                                    Used in JSON unmarshalling so that a single JSON field can accept
-                                    either an individual string or an array of strings.
-                                  properties:
-                                    arrayVal:
-                                      items:
-                                        type: string
-                                      type: array
-                                      x-kubernetes-list-type: atomic
-                                    objectVal:
-                                      additionalProperties:
-                                        type: string
-                                      type: object
-                                    stringVal:
-                                      type: string
-                                    type:
-                                      description: |-
-                                        ParamType indicates the type of an input parameter;
-                                        Used to distinguish between a single string and an array of strings.
-                                      type: string
-                                  required:
-                                  - arrayVal
-                                  - objectVal
-                                  - stringVal
-                                  - type
-                                  type: object
-                              required:
-                              - name
-                              - value
-                              type: object
-                            type: array
+                            description: Param declares an ParamValues to use for
+                              the parameter called name.
+                            properties:
+                              name:
+                                type: string
+                              value:
+                                x-kubernetes-preserve-unknown-fields: true
+                            required:
+                            - name
+                            - value
+                            type: object
                           type: array
-                          x-kubernetes-list-type: atomic
                       type: object
                     name:
                       description: |-
@@ -200,48 +134,18 @@ spec:
                     params:
                       description: Parameters declares parameters passed to this task.
                       items:
-                        description: Params is a list of Param
-                        items:
-                          description: Param declares an ParamValues to use for the
-                            parameter called name.
-                          properties:
-                            name:
-                              type: string
-                            value:
-                              description: |-
-                                ParamValue is a type that can hold a single string, string array, or string map.
-                                Used in JSON unmarshalling so that a single JSON field can accept
-                                either an individual string or an array of strings.
-                              properties:
-                                arrayVal:
-                                  items:
-                                    type: string
-                                  type: array
-                                  x-kubernetes-list-type: atomic
-                                objectVal:
-                                  additionalProperties:
-                                    type: string
-                                  type: object
-                                stringVal:
-                                  type: string
-                                type:
-                                  description: |-
-                                    ParamType indicates the type of an input parameter;
-                                    Used to distinguish between a single string and an array of strings.
-                                  type: string
-                              required:
-                              - arrayVal
-                              - objectVal
-                              - stringVal
-                              - type
-                              type: object
-                          required:
-                          - name
-                          - value
-                          type: object
-                        type: array
+                        description: Param declares an ParamValues to use for the
+                          parameter called name.
+                        properties:
+                          name:
+                            type: string
+                          value:
+                            x-kubernetes-preserve-unknown-fields: true
+                        required:
+                        - name
+                        - value
+                        type: object
                       type: array
-                      x-kubernetes-list-type: atomic
                     retries:
                       description: 'Retries represents how many times this task should
                         be retried in case of task failure: ConditionSucceeded set
@@ -279,48 +183,18 @@ spec:
                             "repo" or "path" but the set of params ultimately depends on
                             the chosen resolver.
                           items:
-                            description: Params is a list of Param
-                            items:
-                              description: Param declares an ParamValues to use for
-                                the parameter called name.
-                              properties:
-                                name:
-                                  type: string
-                                value:
-                                  description: |-
-                                    ParamValue is a type that can hold a single string, string array, or string map.
-                                    Used in JSON unmarshalling so that a single JSON field can accept
-                                    either an individual string or an array of strings.
-                                  properties:
-                                    arrayVal:
-                                      items:
-                                        type: string
-                                      type: array
-                                      x-kubernetes-list-type: atomic
-                                    objectVal:
-                                      additionalProperties:
-                                        type: string
-                                      type: object
-                                    stringVal:
-                                      type: string
-                                    type:
-                                      description: |-
-                                        ParamType indicates the type of an input parameter;
-                                        Used to distinguish between a single string and an array of strings.
-                                      type: string
-                                  required:
-                                  - arrayVal
-                                  - objectVal
-                                  - stringVal
-                                  - type
-                                  type: object
-                              required:
-                              - name
-                              - value
-                              type: object
-                            type: array
+                            description: Param declares an ParamValues to use for
+                              the parameter called name.
+                            properties:
+                              name:
+                                type: string
+                              value:
+                                x-kubernetes-preserve-unknown-fields: true
+                            required:
+                            - name
+                            - value
+                            type: object
                           type: array
-                          x-kubernetes-list-type: atomic
                         resolver:
                           description: |-
                             Resolver is the name of the resolver that should perform
@@ -363,75 +237,49 @@ spec:
                             must be supplied as inputs in TaskRuns unless they declare a default
                             value.
                           items:
-                            description: ParamSpecs is a list of ParamSpec
-                            items:
-                              description: |-
-                                ParamSpec defines arbitrary parameters needed beyond typed inputs (such as
-                                resources). Parameter values are provided by users as inputs on a TaskRun
-                                or PipelineRun.
+                            description: |-
+                              ParamSpec defines arbitrary parameters needed beyond typed inputs (such as
+                              resources). Parameter values are provided by users as inputs on a TaskRun
+                              or PipelineRun.
+                            properties:
+                              default:
+                                description: |-
+                                  Default is the value a parameter takes if no input value is supplied. If
+                                  default is set, a Task may be executed without a supplied value for the
+                                  parameter.
+                                x-kubernetes-preserve-unknown-fields: true
+                              description:
+                                description: |-
+                                  Description is a user-facing description of the parameter that may be
+                                  used to populate a UI.
+                                type: string
+                              name:
+                                description: Name declares the name by which a parameter
+                                  is referenced.
+                                type: string
                               properties:
-                                default:
-                                  description: |-
-                                    Default is the value a parameter takes if no input value is supplied. If
-                                    default is set, a Task may be executed without a supplied value for the
-                                    parameter.
+                                additionalProperties:
+                                  description: PropertySpec defines the struct for
+                                    object keys
                                   properties:
-                                    arrayVal:
-                                      items:
-                                        type: string
-                                      type: array
-                                      x-kubernetes-list-type: atomic
-                                    objectVal:
-                                      additionalProperties:
-                                        type: string
-                                      type: object
-                                    stringVal:
-                                      type: string
                                     type:
                                       description: |-
                                         ParamType indicates the type of an input parameter;
                                         Used to distinguish between a single string and an array of strings.
                                       type: string
-                                  required:
-                                  - arrayVal
-                                  - objectVal
-                                  - stringVal
-                                  - type
                                   type: object
-                                description:
-                                  description: |-
-                                    Description is a user-facing description of the parameter that may be
-                                    used to populate a UI.
-                                  type: string
-                                name:
-                                  description: Name declares the name by which a parameter
-                                    is referenced.
-                                  type: string
-                                properties:
-                                  additionalProperties:
-                                    description: PropertySpec defines the struct for
-                                      object keys
-                                    properties:
-                                      type:
-                                        description: |-
-                                          ParamType indicates the type of an input parameter;
-                                          Used to distinguish between a single string and an array of strings.
-                                        type: string
-                                    type: object
-                                  description: Properties is the JSON Schema properties
-                                    to support key-value pairs parameter.
-                                  type: object
-                                type:
-                                  description: |-
-                                    Type is the user-specified type of the parameter. The possible types
-                                    are currently "string", "array" and "object", and "string" is the default.
-                                  type: string
-                              required:
-                              - name
-                              type: object
-                            type: array
+                                description: Properties is the JSON Schema properties
+                                  to support key-value pairs parameter.
+                                type: object
+                              type:
+                                description: |-
+                                  Type is the user-specified type of the parameter. The possible types
+                                  are currently "string", "array" and "object", and "string" is the default.
+                                type: string
+                            required:
+                            - name
+                            type: object
                           type: array
-                          x-kubernetes-list-type: atomic
                         results:
                           description: Results are values that this Task can output
                           items:
@@ -4541,75 +4389,48 @@ spec:
                   Params declares a list of input parameters that must be supplied when
                   this Pipeline is run.
                 items:
-                  description: ParamSpecs is a list of ParamSpec
-                  items:
-                    description: |-
-                      ParamSpec defines arbitrary parameters needed beyond typed inputs (such as
-                      resources). Parameter values are provided by users as inputs on a TaskRun
-                      or PipelineRun.
+                  description: |-
+                    ParamSpec defines arbitrary parameters needed beyond typed inputs (such as
+                    resources). Parameter values are provided by users as inputs on a TaskRun
+                    or PipelineRun.
+                  properties:
+                    default:
+                      description: |-
+                        Default is the value a parameter takes if no input value is supplied. If
+                        default is set, a Task may be executed without a supplied value for the
+                        parameter.
+                      x-kubernetes-preserve-unknown-fields: true
+                    description:
+                      description: |-
+                        Description is a user-facing description of the parameter that may be
+                        used to populate a UI.
+                      type: string
+                    name:
+                      description: Name declares the name by which a parameter is
+                        referenced.
+                      type: string
                     properties:
-                      default:
-                        description: |-
-                          Default is the value a parameter takes if no input value is supplied. If
-                          default is set, a Task may be executed without a supplied value for the
-                          parameter.
+                      additionalProperties:
+                        description: PropertySpec defines the struct for object keys
                         properties:
-                          arrayVal:
-                            items:
-                              type: string
-                            type: array
-                            x-kubernetes-list-type: atomic
-                          objectVal:
-                            additionalProperties:
-                              type: string
-                            type: object
-                          stringVal:
-                            type: string
                           type:
                             description: |-
                               ParamType indicates the type of an input parameter;
                               Used to distinguish between a single string and an array of strings.
                             type: string
-                        required:
-                        - arrayVal
-                        - objectVal
-                        - stringVal
-                        - type
                         type: object
-                      description:
-                        description: |-
-                          Description is a user-facing description of the parameter that may be
-                          used to populate a UI.
-                        type: string
-                      name:
-                        description: Name declares the name by which a parameter is
-                          referenced.
-                        type: string
-                      properties:
-                        additionalProperties:
-                          description: PropertySpec defines the struct for object
-                            keys
-                          properties:
-                            type:
-                              description: |-
-                                ParamType indicates the type of an input parameter;
-                                Used to distinguish between a single string and an array of strings.
-                              type: string
-                          type: object
-                        description: Properties is the JSON Schema properties to support
-                          key-value pairs parameter.
-                        type: object
-                      type:
-                        description: |-
-                          Type is the user-specified type of the parameter. The possible types
-                          are currently "string", "array" and "object", and "string" is the default.
-                        type: string
-                    required:
-                    - name
-                    type: object
-                  type: array
+                      description: Properties is the JSON Schema properties to support
+                        key-value pairs parameter.
+                      type: object
+                    type:
+                      description: |-
+                        Type is the user-specified type of the parameter. The possible types
+                        are currently "string", "array" and "object", and "string" is the default.
+                      type: string
+                  required:
+                  - name
+                  type: object
                 type: array
-                x-kubernetes-list-type: atomic
               results:
                 description: Results are values that this pipeline can output once
                   run
@@ -4632,16 +4453,16 @@ spec:
                     value:
                       description: Value the expression used to retrieve the value
                       properties:
-                        arrayVal:
+                        array_val:
                           items:
                             type: string
                           type: array
                           x-kubernetes-list-type: atomic
-                        objectVal:
+                        object_val:
                           additionalProperties:
                             type: string
                           type: object
-                        stringVal:
+                        string_val:
                           type: string
                         type:
                           description: |-
@@ -4649,9 +4470,9 @@ spec:
                             Used to distinguish between a single string and an array of strings.
                           type: string
                       required:
-                      - arrayVal
-                      - objectVal
-                      - stringVal
+                      - array_val
+                      - object_val
+                      - string_val
                       - type
                       type: object
                   required:
@@ -4687,67 +4508,31 @@ spec:
                             passing in specific combinations of Parameters into the
                             Matrix.
                           items:
-                            description: IncludeParamsList is a list of IncludeParams
-                              which allows passing in specific combinations of Parameters
-                              into the Matrix.
-                            items:
-                              description: IncludeParams allows passing in a specific
-                                combinations of Parameters into the Matrix.
-                              properties:
-                                name:
-                                  description: Name the specified combination
-                                  type: string
-                                params:
-                                  description: |-
-                                    Params takes only `Parameters` of type `"string"`
-                                    The names of the `params` must match the names of the `params` in the underlying `Task`
-                                  items:
-                                    description: Params is a list of Param
-                                    items:
-                                      description: Param declares an ParamValues to
-                                        use for the parameter called name.
-                                      properties:
-                                        name:
-                                          type: string
-                                        value:
-                                          description: |-
-                                            ParamValue is a type that can hold a single string, string array, or string map.
-                                            Used in JSON unmarshalling so that a single JSON field can accept
-                                            either an individual string or an array of strings.
-                                          properties:
-                                            arrayVal:
-                                              items:
-                                                type: string
-                                              type: array
-                                              x-kubernetes-list-type: atomic
-                                            objectVal:
-                                              additionalProperties:
-                                                type: string
-                                              type: object
-                                            stringVal:
-                                              type: string
-                                            type:
-                                              description: |-
-                                                ParamType indicates the type of an input parameter;
-                                                Used to distinguish between a single string and an array of strings.
-                                              type: string
-                                          required:
-                                          - arrayVal
-                                          - objectVal
-                                          - stringVal
-                                          - type
-                                          type: object
-                                      required:
-                                      - name
-                                      - value
-                                      type: object
-                                    type: array
-                                  type: array
-                                  x-kubernetes-list-type: atomic
-                              type: object
-                            type: array
+                            description: IncludeParams allows passing in a specific
+                              combinations of Parameters into the Matrix.
+                            properties:
+                              name:
+                                description: Name the specified combination
+                                type: string
+                              params:
+                                description: |-
+                                  Params takes only `Parameters` of type `"string"`
+                                  The names of the `params` must match the names of the `params` in the underlying `Task`
+                                items:
+                                  description: Param declares an ParamValues to use
+                                    for the parameter called name.
+                                  properties:
+                                    name:
+                                      type: string
+                                    value:
+                                      x-kubernetes-preserve-unknown-fields: true
+                                  required:
+                                  - name
+                                  - value
+                                  type: object
+                                type: array
+                            type: object
                           type: array
-                          x-kubernetes-list-type: atomic
                         params:
                           description: |-
                             Params is a list of parameters used to fan out the pipelineTask
@@ -4755,48 +4540,18 @@ spec:
                             Each array element is supplied to the `PipelineTask` by substituting `params` of type `"string"` in the underlying `Task`.
                             The names of the `params` in the `Matrix` must match the names of the `params` in the underlying `Task` that they will be substituting.
                           items:
-                            description: Params is a list of Param
-                            items:
-                              description: Param declares an ParamValues to use for
-                                the parameter called name.
-                              properties:
-                                name:
-                                  type: string
-                                value:
-                                  description: |-
-                                    ParamValue is a type that can hold a single string, string array, or string map.
-                                    Used in JSON unmarshalling so that a single JSON field can accept
-                                    either an individual string or an array of strings.
-                                  properties:
-                                    arrayVal:
-                                      items:
-                                        type: string
-                                      type: array
-                                      x-kubernetes-list-type: atomic
-                                    objectVal:
-                                      additionalProperties:
-                                        type: string
-                                      type: object
-                                    stringVal:
-                                      type: string
-                                    type:
-                                      description: |-
-                                        ParamType indicates the type of an input parameter;
-                                        Used to distinguish between a single string and an array of strings.
-                                      type: string
-                                  required:
-                                  - arrayVal
-                                  - objectVal
-                                  - stringVal
-                                  - type
-                                  type: object
-                              required:
-                              - name
-                              - value
-                              type: object
-                            type: array
+                            description: Param declares an ParamValues to use for
+                              the parameter called name.
+                            properties:
+                              name:
+                                type: string
+                              value:
+                                x-kubernetes-preserve-unknown-fields: true
+                            required:
+                            - name
+                            - value
+                            type: object
                           type: array
-                          x-kubernetes-list-type: atomic
                       type: object
                     name:
                       description: |-
@@ -4807,48 +4562,18 @@ spec:
                     params:
                       description: Parameters declares parameters passed to this task.
                       items:
-                        description: Params is a list of Param
-                        items:
-                          description: Param declares an ParamValues to use for the
-                            parameter called name.
-                          properties:
-                            name:
-                              type: string
-                            value:
-                              description: |-
-                                ParamValue is a type that can hold a single string, string array, or string map.
-                                Used in JSON unmarshalling so that a single JSON field can accept
-                                either an individual string or an array of strings.
-                              properties:
-                                arrayVal:
-                                  items:
-                                    type: string
-                                  type: array
-                                  x-kubernetes-list-type: atomic
-                                objectVal:
-                                  additionalProperties:
-                                    type: string
-                                  type: object
-                                stringVal:
-                                  type: string
-                                type:
-                                  description: |-
-                                    ParamType indicates the type of an input parameter;
-                                    Used to distinguish between a single string and an array of strings.
-                                  type: string
-                              required:
-                              - arrayVal
-                              - objectVal
-                              - stringVal
-                              - type
-                              type: object
-                          required:
-                          - name
-                          - value
-                          type: object
-                        type: array
+                        description: Param declares an ParamValues to use for the
+                          parameter called name.
+                        properties:
+                          name:
+                            type: string
+                          value:
+                            x-kubernetes-preserve-unknown-fields: true
+                        required:
+                        - name
+                        - value
+                        type: object
                       type: array
-                      x-kubernetes-list-type: atomic
                     retries:
                       description: 'Retries represents how many times this task should
                         be retried in case of task failure: ConditionSucceeded set
@@ -4886,48 +4611,18 @@ spec:
                             "repo" or "path" but the set of params ultimately depends on
                             the chosen resolver.
                           items:
-                            description: Params is a list of Param
-                            items:
-                              description: Param declares an ParamValues to use for
-                                the parameter called name.
-                              properties:
-                                name:
-                                  type: string
-                                value:
-                                  description: |-
-                                    ParamValue is a type that can hold a single string, string array, or string map.
-                                    Used in JSON unmarshalling so that a single JSON field can accept
-                                    either an individual string or an array of strings.
-                                  properties:
-                                    arrayVal:
-                                      items:
-                                        type: string
-                                      type: array
-                                      x-kubernetes-list-type: atomic
-                                    objectVal:
-                                      additionalProperties:
-                                        type: string
-                                      type: object
-                                    stringVal:
-                                      type: string
-                                    type:
-                                      description: |-
-                                        ParamType indicates the type of an input parameter;
-                                        Used to distinguish between a single string and an array of strings.
-                                      type: string
-                                  required:
-                                  - arrayVal
-                                  - objectVal
-                                  - stringVal
-                                  - type
-                                  type: object
-                              required:
-                              - name
-                              - value
-                              type: object
-                            type: array
+                            description: Param declares an ParamValues to use for
+                              the parameter called name.
+                            properties:
+                              name:
+                                type: string
+                              value:
+                                x-kubernetes-preserve-unknown-fields: true
+                            required:
+                            - name
+                            - value
+                            type: object
                           type: array
-                          x-kubernetes-list-type: atomic
                         resolver:
                           description: |-
                             Resolver is the name of the resolver that should perform
@@ -4970,75 +4665,49 @@ spec:
                             must be supplied as inputs in TaskRuns unless they declare a default
                             value.
                           items:
-                            description: ParamSpecs is a list of ParamSpec
-                            items:
-                              description: |-
-                                ParamSpec defines arbitrary parameters needed beyond typed inputs (such as
-                                resources). Parameter values are provided by users as inputs on a TaskRun
-                                or PipelineRun.
+                            description: |-
+                              ParamSpec defines arbitrary parameters needed beyond typed inputs (such as
+                              resources). Parameter values are provided by users as inputs on a TaskRun
+                              or PipelineRun.
+                            properties:
+                              default:
+                                description: |-
+                                  Default is the value a parameter takes if no input value is supplied. If
+                                  default is set, a Task may be executed without a supplied value for the
+                                  parameter.
+                                x-kubernetes-preserve-unknown-fields: true
+                              description:
+                                description: |-
+                                  Description is a user-facing description of the parameter that may be
+                                  used to populate a UI.
+                                type: string
+                              name:
+                                description: Name declares the name by which a parameter
+                                  is referenced.
+                                type: string
                               properties:
-                                default:
-                                  description: |-
-                                    Default is the value a parameter takes if no input value is supplied. If
-                                    default is set, a Task may be executed without a supplied value for the
-                                    parameter.
+                                additionalProperties:
+                                  description: PropertySpec defines the struct for
+                                    object keys
                                   properties:
-                                    arrayVal:
-                                      items:
-                                        type: string
-                                      type: array
-                                      x-kubernetes-list-type: atomic
-                                    objectVal:
-                                      additionalProperties:
-                                        type: string
-                                      type: object
-                                    stringVal:
-                                      type: string
                                     type:
                                       description: |-
                                         ParamType indicates the type of an input parameter;
                                         Used to distinguish between a single string and an array of strings.
                                       type: string
-                                  required:
-                                  - arrayVal
-                                  - objectVal
-                                  - stringVal
-                                  - type
                                   type: object
-                                description:
-                                  description: |-
-                                    Description is a user-facing description of the parameter that may be
-                                    used to populate a UI.
-                                  type: string
-                                name:
-                                  description: Name declares the name by which a parameter
-                                    is referenced.
-                                  type: string
-                                properties:
-                                  additionalProperties:
-                                    description: PropertySpec defines the struct for
-                                      object keys
-                                    properties:
-                                      type:
-                                        description: |-
-                                          ParamType indicates the type of an input parameter;
-                                          Used to distinguish between a single string and an array of strings.
-                                        type: string
-                                    type: object
-                                  description: Properties is the JSON Schema properties
-                                    to support key-value pairs parameter.
-                                  type: object
-                                type:
-                                  description: |-
-                                    Type is the user-specified type of the parameter. The possible types
-                                    are currently "string", "array" and "object", and "string" is the default.
-                                  type: string
-                              required:
-                              - name
-                              type: object
-                            type: array
+                                description: Properties is the JSON Schema properties
+                                  to support key-value pairs parameter.
+                                type: object
+                              type:
+                                description: |-
+                                  Type is the user-specified type of the parameter. The possible types
+                                  are currently "string", "array" and "object", and "string" is the default.
+                                type: string
+                            required:
+                            - name
+                            type: object
                           type: array
-                          x-kubernetes-list-type: atomic
                         results:
                           description: Results are values that this Task can output
                           items:

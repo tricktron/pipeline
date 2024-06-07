@@ -81,49 +81,20 @@ spec:
                     x-kubernetes-list-type: atomic
                 type: object
               params:
+                description: Params is a list of Param
                 items:
-                  description: Params is a list of Param
-                  items:
-                    description: Param declares an ParamValues to use for the parameter
-                      called name.
-                    properties:
-                      name:
-                        type: string
-                      value:
-                        description: |-
-                          ParamValue is a type that can hold a single string, string array, or string map.
-                          Used in JSON unmarshalling so that a single JSON field can accept
-                          either an individual string or an array of strings.
-                        properties:
-                          arrayVal:
-                            items:
-                              type: string
-                            type: array
-                            x-kubernetes-list-type: atomic
-                          objectVal:
-                            additionalProperties:
-                              type: string
-                            type: object
-                          stringVal:
-                            type: string
-                          type:
-                            description: |-
-                              ParamType indicates the type of an input parameter;
-                              Used to distinguish between a single string and an array of strings.
-                            type: string
-                        required:
-                        - arrayVal
-                        - objectVal
-                        - stringVal
-                        - type
-                        type: object
-                    required:
-                    - name
-                    - value
-                    type: object
-                  type: array
+                  description: Param declares an ParamValues to use for the parameter
+                    called name.
+                  properties:
+                    name:
+                      type: string
+                    value:
+                      x-kubernetes-preserve-unknown-fields: true
+                  required:
+                  - name
+                  - value
+                  type: object
                 type: array
-                x-kubernetes-list-type: atomic
               podTemplate:
                 description: PodTemplate holds pod specific configuration
                 properties:
@@ -3241,48 +3212,18 @@ spec:
                       "repo" or "path" but the set of params ultimately depends on
                       the chosen resolver.
                     items:
-                      description: Params is a list of Param
-                      items:
-                        description: Param declares an ParamValues to use for the
-                          parameter called name.
-                        properties:
-                          name:
-                            type: string
-                          value:
-                            description: |-
-                              ParamValue is a type that can hold a single string, string array, or string map.
-                              Used in JSON unmarshalling so that a single JSON field can accept
-                              either an individual string or an array of strings.
-                            properties:
-                              arrayVal:
-                                items:
-                                  type: string
-                                type: array
-                                x-kubernetes-list-type: atomic
-                              objectVal:
-                                additionalProperties:
-                                  type: string
-                                type: object
-                              stringVal:
-                                type: string
-                              type:
-                                description: |-
-                                  ParamType indicates the type of an input parameter;
-                                  Used to distinguish between a single string and an array of strings.
-                                type: string
-                            required:
-                            - arrayVal
-                            - objectVal
-                            - stringVal
-                            - type
-                            type: object
-                        required:
-                        - name
-                        - value
-                        type: object
-                      type: array
+                      description: Param declares an ParamValues to use for the parameter
+                        called name.
+                      properties:
+                        name:
+                          type: string
+                        value:
+                          x-kubernetes-preserve-unknown-fields: true
+                      required:
+                      - name
+                      - value
+                      type: object
                     type: array
-                    x-kubernetes-list-type: atomic
                   resolver:
                     description: |-
                       Resolver is the name of the resolver that should perform
@@ -3308,75 +3249,49 @@ spec:
                       must be supplied as inputs in TaskRuns unless they declare a default
                       value.
                     items:
-                      description: ParamSpecs is a list of ParamSpec
-                      items:
-                        description: |-
-                          ParamSpec defines arbitrary parameters needed beyond typed inputs (such as
-                          resources). Parameter values are provided by users as inputs on a TaskRun
-                          or PipelineRun.
+                      description: |-
+                        ParamSpec defines arbitrary parameters needed beyond typed inputs (such as
+                        resources). Parameter values are provided by users as inputs on a TaskRun
+                        or PipelineRun.
+                      properties:
+                        default:
+                          description: |-
+                            Default is the value a parameter takes if no input value is supplied. If
+                            default is set, a Task may be executed without a supplied value for the
+                            parameter.
+                          x-kubernetes-preserve-unknown-fields: true
+                        description:
+                          description: |-
+                            Description is a user-facing description of the parameter that may be
+                            used to populate a UI.
+                          type: string
+                        name:
+                          description: Name declares the name by which a parameter
+                            is referenced.
+                          type: string
                         properties:
-                          default:
-                            description: |-
-                              Default is the value a parameter takes if no input value is supplied. If
-                              default is set, a Task may be executed without a supplied value for the
-                              parameter.
+                          additionalProperties:
+                            description: PropertySpec defines the struct for object
+                              keys
                             properties:
-                              arrayVal:
-                                items:
-                                  type: string
-                                type: array
-                                x-kubernetes-list-type: atomic
-                              objectVal:
-                                additionalProperties:
-                                  type: string
-                                type: object
-                              stringVal:
-                                type: string
                               type:
                                 description: |-
                                   ParamType indicates the type of an input parameter;
                                   Used to distinguish between a single string and an array of strings.
                                 type: string
-                            required:
-                            - arrayVal
-                            - objectVal
-                            - stringVal
-                            - type
                             type: object
-                          description:
-                            description: |-
-                              Description is a user-facing description of the parameter that may be
-                              used to populate a UI.
-                            type: string
-                          name:
-                            description: Name declares the name by which a parameter
-                              is referenced.
-                            type: string
-                          properties:
-                            additionalProperties:
-                              description: PropertySpec defines the struct for object
-                                keys
-                              properties:
-                                type:
-                                  description: |-
-                                    ParamType indicates the type of an input parameter;
-                                    Used to distinguish between a single string and an array of strings.
-                                  type: string
-                              type: object
-                            description: Properties is the JSON Schema properties
-                              to support key-value pairs parameter.
-                            type: object
-                          type:
-                            description: |-
-                              Type is the user-specified type of the parameter. The possible types
-                              are currently "string", "array" and "object", and "string" is the default.
-                            type: string
-                        required:
-                        - name
-                        type: object
-                      type: array
+                          description: Properties is the JSON Schema properties to
+                            support key-value pairs parameter.
+                          type: object
+                        type:
+                          description: |-
+                            Type is the user-specified type of the parameter. The possible types
+                            are currently "string", "array" and "object", and "string" is the default.
+                          type: string
+                      required:
+                      - name
+                      type: object
                     type: array
-                    x-kubernetes-list-type: atomic
                   results:
                     description: Results are values that this Task can output
                     items:
@@ -8212,6 +8127,62 @@ spec:
                   featureFlags:
                     description: FeatureFlags identifies the feature flags that were
                       used during the task/pipeline run
+                    properties:
+                      await_sidecar_readiness:
+                        type: boolean
+                      coschedule:
+                        type: string
+                      disable_affinity_assistant:
+                        type: boolean
+                      disable_creds_init:
+                        type: boolean
+                      enable_api_fields:
+                        type: string
+                      enable_provenance_in_status:
+                        type: boolean
+                      enable_tekton_oci_bundles:
+                        type: boolean
+                      enforce_nonfalsifiability:
+                        type: string
+                      max_result_size:
+                        type: integer
+                      require_git_ssh_secret_known_hosts:
+                        type: boolean
+                      result_extraction_method:
+                        type: string
+                      running_in_env_with_injected_sidecars:
+                        type: boolean
+                      scope_when_expressions_to_task:
+                        type: boolean
+                      send_cloud_events_for_runs:
+                        type: boolean
+                      set_security_context:
+                        type: boolean
+                      verification_no_match_policy:
+                        description: |-
+                          VerificationNoMatchPolicy is the feature flag for "trusted-resources-verification-no-match-policy"
+                          VerificationNoMatchPolicy can be set to "ignore", "warn" and "fail" values.
+                          ignore: skip trusted resources verification when no matching verification policies found
+                          warn: skip trusted resources verification when no matching verification policies found and log a warning
+                          fail: fail the taskrun or pipelines run if no matching verification policies found
+                        type: string
+                    required:
+                    - await_sidecar_readiness
+                    - coschedule
+                    - disable_affinity_assistant
+                    - disable_creds_init
+                    - enable_api_fields
+                    - enable_provenance_in_status
+                    - enable_tekton_oci_bundles
+                    - enforce_nonfalsifiability
+                    - max_result_size
+                    - require_git_ssh_secret_known_hosts
+                    - result_extraction_method
+                    - running_in_env_with_injected_sidecars
+                    - scope_when_expressions_to_task
+                    - send_cloud_events_for_runs
+                    - set_security_context
+                    - verification_no_match_policy
                     type: object
                   refSource:
                     description: RefSource identifies the source where a remote task/pipeline
@@ -8254,16 +8225,16 @@ spec:
                     value:
                       description: Value the given value of the result
                       properties:
-                        arrayVal:
+                        array_val:
                           items:
                             type: string
                           type: array
                           x-kubernetes-list-type: atomic
-                        objectVal:
+                        object_val:
                           additionalProperties:
                             type: string
                           type: object
-                        stringVal:
+                        string_val:
                           type: string
                         type:
                           description: |-
@@ -8271,9 +8242,9 @@ spec:
                             Used to distinguish between a single string and an array of strings.
                           type: string
                       required:
-                      - arrayVal
-                      - objectVal
-                      - stringVal
+                      - array_val
+                      - object_val
+                      - string_val
                       - type
                       type: object
                   required:
@@ -8458,75 +8429,49 @@ spec:
                       must be supplied as inputs in TaskRuns unless they declare a default
                       value.
                     items:
-                      description: ParamSpecs is a list of ParamSpec
-                      items:
-                        description: |-
-                          ParamSpec defines arbitrary parameters needed beyond typed inputs (such as
-                          resources). Parameter values are provided by users as inputs on a TaskRun
-                          or PipelineRun.
+                      description: |-
+                        ParamSpec defines arbitrary parameters needed beyond typed inputs (such as
+                        resources). Parameter values are provided by users as inputs on a TaskRun
+                        or PipelineRun.
+                      properties:
+                        default:
+                          description: |-
+                            Default is the value a parameter takes if no input value is supplied. If
+                            default is set, a Task may be executed without a supplied value for the
+                            parameter.
+                          x-kubernetes-preserve-unknown-fields: true
+                        description:
+                          description: |-
+                            Description is a user-facing description of the parameter that may be
+                            used to populate a UI.
+                          type: string
+                        name:
+                          description: Name declares the name by which a parameter
+                            is referenced.
+                          type: string
                         properties:
-                          default:
-                            description: |-
-                              Default is the value a parameter takes if no input value is supplied. If
-                              default is set, a Task may be executed without a supplied value for the
-                              parameter.
+                          additionalProperties:
+                            description: PropertySpec defines the struct for object
+                              keys
                             properties:
-                              arrayVal:
-                                items:
-                                  type: string
-                                type: array
-                                x-kubernetes-list-type: atomic
-                              objectVal:
-                                additionalProperties:
-                                  type: string
-                                type: object
-                              stringVal:
-                                type: string
                               type:
                                 description: |-
                                   ParamType indicates the type of an input parameter;
                                   Used to distinguish between a single string and an array of strings.
                                 type: string
-                            required:
-                            - arrayVal
-                            - objectVal
-                            - stringVal
-                            - type
                             type: object
-                          description:
-                            description: |-
-                              Description is a user-facing description of the parameter that may be
-                              used to populate a UI.
-                            type: string
-                          name:
-                            description: Name declares the name by which a parameter
-                              is referenced.
-                            type: string
-                          properties:
-                            additionalProperties:
-                              description: PropertySpec defines the struct for object
-                                keys
-                              properties:
-                                type:
-                                  description: |-
-                                    ParamType indicates the type of an input parameter;
-                                    Used to distinguish between a single string and an array of strings.
-                                  type: string
-                              type: object
-                            description: Properties is the JSON Schema properties
-                              to support key-value pairs parameter.
-                            type: object
-                          type:
-                            description: |-
-                              Type is the user-specified type of the parameter. The possible types
-                              are currently "string", "array" and "object", and "string" is the default.
-                            type: string
-                        required:
-                        - name
-                        type: object
-                      type: array
+                          description: Properties is the JSON Schema properties to
+                            support key-value pairs parameter.
+                          type: object
+                        type:
+                          description: |-
+                            Type is the user-specified type of the parameter. The possible types
+                            are currently "string", "array" and "object", and "string" is the default.
+                          type: string
+                      required:
+                      - name
+                      type: object
                     type: array
-                    x-kubernetes-list-type: atomic
                   results:
                     description: Results are values that this Task can output
                     items:
