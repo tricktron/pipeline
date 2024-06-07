@@ -1,0 +1,16 @@
+{
+    "oneOf": [
+        {
+            "$ref": "pipelinerun_tekton.dev_v1.json"
+        },
+        {
+            "$ref": "pipeline_tekton.dev_v1.json"
+        },
+        {
+            "$ref": "taskrun_tekton.dev_v1.json"
+        },
+        {
+            "$ref": "task_tekton.dev_v1.json"
+        }
+    ]
+}
