@@ -32,12 +32,12 @@ type Matrix struct {
 	// Each array element is supplied to the `PipelineTask` by substituting `params` of type `"string"` in the underlying `Task`.
 	// The names of the `params` in the `Matrix` must match the names of the `params` in the underlying `Task` that they will be substituting.
 	// +listType=atomic
-	Params []Params `json:"params,omitempty"`
+	Params Params `json:"params,omitempty"`
 
 	// Include is a list of IncludeParams which allows passing in specific combinations of Parameters into the Matrix.
 	// +optional
 	// +listType=atomic
-	Include []IncludeParamsList `json:"include,omitempty"`
+	Include IncludeParamsList `json:"include,omitempty"`
 }
 
 // IncludeParamsList is a list of IncludeParams which allows passing in specific combinations of Parameters into the Matrix.
@@ -51,7 +51,7 @@ type IncludeParams struct {
 	// Params takes only `Parameters` of type `"string"`
 	// The names of the `params` must match the names of the `params` in the underlying `Task`
 	// +listType=atomic
-	Params []Params `json:"params,omitempty"`
+	Params Params `json:"params,omitempty"`
 }
 
 // Combination is a map, mainly defined to hold a single combination from a Matrix with key as param.Name and value as param.Value
