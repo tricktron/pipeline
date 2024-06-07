@@ -52,6 +52,8 @@ type ParamSpec struct {
 	// default is set, a Task may be executed without a supplied value for the
 	// parameter.
 	// +optional
+	// +kubebuilder:validation:Schemaless
+	// +kubebuilder:pruning:PreserveUnknownFields
 	Default *ParamValue `json:"default,omitempty"`
 }
 
@@ -150,7 +152,10 @@ func (ps ParamSpecs) validateNoDuplicateNames() *apis.FieldError {
 
 // Param declares an ParamValues to use for the parameter called name.
 type Param struct {
-	Name  string     `json:"name"`
+	Name string `json:"name"`
+
+	// +kubebuilder:validation:Schemaless
+	// +kubebuilder:pruning:PreserveUnknownFields
 	Value ParamValue `json:"value"`
 }
 
@@ -399,12 +404,13 @@ var AllParamTypes = []ParamType{ParamTypeString, ParamTypeArray, ParamTypeObject
 // ParamValue is a type that can hold a single string, string array, or string map.
 // Used in JSON unmarshalling so that a single JSON field can accept
 // either an individual string or an array of strings.
+
 type ParamValue struct {
-	Type      ParamType // Represents the stored type of ParamValues.
-	StringVal string
+	Type      ParamType `json:"type"` // Represents the stored type of ParamValues.
+	StringVal string    `json:"string_val"`
 	// +listType=atomic
-	ArrayVal  []string
-	ObjectVal map[string]string
+	ArrayVal  []string          `json:"array_val"`
+	ObjectVal map[string]string `json:"object_val"`
 }
 
 // UnmarshalJSON implements the json.Unmarshaller interface.

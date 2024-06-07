@@ -114,27 +114,27 @@ var DefaultFeatureFlags, _ = NewFeatureFlagsFromMap(map[string]string{})
 //
 //nolint:musttag
 type FeatureFlags struct {
-	DisableAffinityAssistant         bool
-	DisableCredsInit                 bool
-	RunningInEnvWithInjectedSidecars bool
-	RequireGitSSHSecretKnownHosts    bool
-	EnableTektonOCIBundles           bool
-	ScopeWhenExpressionsToTask       bool
-	EnableAPIFields                  string
-	SendCloudEventsForRuns           bool
-	AwaitSidecarReadiness            bool
-	EnforceNonfalsifiability         string
+	DisableAffinityAssistant         bool   `json:"disable_affinity_assistant"`
+	DisableCredsInit                 bool   `json:"disable_creds_init"`
+	RunningInEnvWithInjectedSidecars bool   `json:"running_in_env_with_injected_sidecars"`
+	RequireGitSSHSecretKnownHosts    bool   `json:"require_git_ssh_secret_known_hosts"`
+	EnableTektonOCIBundles           bool   `json:"enable_tekton_oci_bundles"`
+	ScopeWhenExpressionsToTask       bool   `json:"scope_when_expressions_to_task"`
+	EnableAPIFields                  string `json:"enable_api_fields"`
+	SendCloudEventsForRuns           bool   `json:"send_cloud_events_for_runs"`
+	AwaitSidecarReadiness            bool   `json:"await_sidecar_readiness"`
+	EnforceNonfalsifiability         string `json:"enforce_nonfalsifiability"`
 	// VerificationNoMatchPolicy is the feature flag for "trusted-resources-verification-no-match-policy"
 	// VerificationNoMatchPolicy can be set to "ignore", "warn" and "fail" values.
 	// ignore: skip trusted resources verification when no matching verification policies found
 	// warn: skip trusted resources verification when no matching verification policies found and log a warning
 	// fail: fail the taskrun or pipelines run if no matching verification policies found
-	VerificationNoMatchPolicy string
-	EnableProvenanceInStatus  bool
-	ResultExtractionMethod    string
-	MaxResultSize             int
-	SetSecurityContext        bool
-	Coschedule                string
+	VerificationNoMatchPolicy string `json:"verification_no_match_policy"`
+	EnableProvenanceInStatus  bool   `json:"enable_provenance_in_status"`
+	ResultExtractionMethod    string `json:"result_extraction_method"`
+	MaxResultSize             int    `json:"max_result_size"`
+	SetSecurityContext        bool   `json:"set_security_context"`
+	Coschedule                string `json:"coschedule"`
 }
 
 // GetFeatureFlagsConfigName returns the name of the configmap containing all
