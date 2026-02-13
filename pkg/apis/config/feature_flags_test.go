@@ -55,6 +55,7 @@ func TestNewFeatureFlagsFromConfigMap(t *testing.T) {
 				EnableParamEnum:                  config.DefaultEnableParamEnum.Enabled,
 				DisableInlineSpec:                config.DefaultDisableInlineSpec,
 				EnableConciseResolverSyntax:      config.DefaultEnableConciseResolverSyntax.Enabled,
+				EnableCACertInjection:            config.DefaultEnableCACertInjection,
 			},
 			fileName: config.GetFeatureFlagsConfigName(),
 		},
@@ -80,6 +81,7 @@ func TestNewFeatureFlagsFromConfigMap(t *testing.T) {
 				DisableInlineSpec:                        "pipeline,pipelinerun,taskrun",
 				EnableConciseResolverSyntax:              true,
 				EnableKubernetesSidecar:                  true,
+				EnableCACertInjection:                    true,
 			},
 			fileName: "feature-flags-all-flags-set",
 		},
@@ -217,6 +219,7 @@ func TestNewFeatureFlagsFromEmptyConfigMap(t *testing.T) {
 		EnableCELInWhenExpression:        config.DefaultEnableCELInWhenExpression.Enabled,
 		EnableParamEnum:                  config.DefaultEnableParamEnum.Enabled,
 		DisableInlineSpec:                config.DefaultDisableInlineSpec,
+		EnableCACertInjection:            config.DefaultEnableCACertInjection,
 	}
 	verifyConfigFileWithExpectedFeatureFlagsConfig(t, FeatureFlagsConfigEmptyName, expectedConfig)
 }
@@ -414,5 +417,34 @@ func verifyConfigFileWithExpectedFeatureFlagsConfig(t *testing.T, fileName strin
 		}
 	} else {
 		t.Errorf("NewFeatureFlagsFromConfigMap(actual) = %v", err)
+	}
+}
+
+func TestEnableCACertInjection(t *testing.T) {
+	for _, tc := range []struct {
+		name     string
+		cfgMap   map[string]string
+		expected bool
+	}{
+		{
+			name:     "enabled when set to true",
+			cfgMap:   map[string]string{"enable-ca-cert-injection": "true"},
+			expected: true,
+		},
+		{
+			name:     "defaults to false when not set",
+			cfgMap:   map[string]string{},
+			expected: false,
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			flags, err := config.NewFeatureFlagsFromMap(tc.cfgMap)
+			if err != nil {
+				t.Fatalf("NewFeatureFlagsFromMap() = %v", err)
+			}
+			if flags.EnableCACertInjection != tc.expected {
+				t.Errorf("EnableCACertInjection = %v, want %v", flags.EnableCACertInjection, tc.expected)
+			}
+		})
 	}
 }

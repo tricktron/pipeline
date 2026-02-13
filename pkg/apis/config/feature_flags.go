@@ -111,6 +111,10 @@ const (
 	EnableWaitExponentialBackoff = "enable-wait-exponential-backoff"
 	// DefaultEnableWaitExponentialBackoff is the default value for EnableWaitExponentialBackoff
 	DefaultEnableWaitExponentialBackoff = false
+	// EnableCACertInjection is the flag to enable CA cert injection into task pods
+	EnableCACertInjection = "enable-ca-cert-injection"
+	// DefaultEnableCACertInjection is the default value for EnableCACertInjection
+	DefaultEnableCACertInjection = false
 
 	// EnableStepActions is the flag to enable step actions (no-op since it's stable)
 	EnableStepActions = "enable-step-actions"
@@ -210,6 +214,7 @@ type FeatureFlags struct {
 	EnableConciseResolverSyntax  bool   `json:"enableConciseResolverSyntax,omitempty"`
 	EnableKubernetesSidecar      bool   `json:"enableKubernetesSidecar,omitempty"`
 	EnableWaitExponentialBackoff bool   `json:"enableWaitExponentialBackoff,omitempty"`
+	EnableCACertInjection        bool   `json:"enableCACertInjection,omitempty"`
 }
 
 // GetFeatureFlagsConfigName returns the name of the configmap containing all
@@ -315,6 +320,9 @@ func NewFeatureFlagsFromMap(cfgMap map[string]string) (*FeatureFlags, error) {
 		return nil, err
 	}
 	if err := setFeature(EnableWaitExponentialBackoff, DefaultEnableWaitExponentialBackoff, &tc.EnableWaitExponentialBackoff); err != nil {
+		return nil, err
+	}
+	if err := setFeature(EnableCACertInjection, DefaultEnableCACertInjection, &tc.EnableCACertInjection); err != nil {
 		return nil, err
 	}
 
