@@ -3840,6 +3840,7 @@ func TestPodBuildWithK8s129(t *testing.T) {
 		t.Errorf("Sidecar does not have RestartPolicy Always: %s", diff.PrintWantGot(d))
 	}
 }
+
 func TestIsNativeSidecarSupport(t *testing.T) {
 	tests := []struct {
 		name          string
@@ -4060,5 +4061,240 @@ func TestCreateResultsSidecarWithWaitForever(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+func buildCACertInjectionPod(t *testing.T, featureFlags map[string]string, steps []v1.Step) *corev1.Pod {
+	t.Helper()
+	names.TestingSeed()
+	store := config.NewStore(logtesting.TestLogger(t))
+	store.OnConfigChanged(&corev1.ConfigMap{
+		ObjectMeta: metav1.ObjectMeta{Name: config.GetFeatureFlagsConfigName(), Namespace: system.Namespace()},
+		Data:       featureFlags,
+	})
+
+	taskRun := &v1.TaskRun{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "taskrun-ca-cert",
+			Namespace: "default",
+			Annotations: map[string]string{
+				ReleaseAnnotation: fakeVersion,
+			},
+		},
+	}
+
+	builder := Builder{
+		Images:          images,
+		KubeClient:      fakek8s.NewSimpleClientset(&corev1.ServiceAccount{ObjectMeta: metav1.ObjectMeta{Name: "default", Namespace: "default"}}),
+		EntrypointCache: fakeCache{},
+	}
+
+	got, err := builder.Build(store.ToContext(t.Context()), taskRun, v1.TaskSpec{Steps: steps})
+	if err != nil {
+		t.Fatalf("builder.Build: %v", err)
+	}
+	return got
+}
+
+func assertCACertVolume(t *testing.T, pod *corev1.Pod) {
+	t.Helper()
+
+	var gotCACertVolume *corev1.Volume
+	for i := range pod.Spec.Volumes {
+		if pod.Spec.Volumes[i].Name == "tekton-ca-cert" {
+			gotCACertVolume = &pod.Spec.Volumes[i]
+			break
+		}
+	}
+	if gotCACertVolume == nil {
+		t.Fatalf("expected tekton-ca-cert volume to be present")
+	}
+
+	optional := true
+	wantVolume := corev1.Volume{
+		Name: "tekton-ca-cert",
+		VolumeSource: corev1.VolumeSource{ConfigMap: &corev1.ConfigMapVolumeSource{
+			LocalObjectReference: corev1.LocalObjectReference{Name: "config-registry-cert"},
+			Optional:             &optional,
+		}},
+	}
+	if d := cmp.Diff(wantVolume, *gotCACertVolume); d != "" {
+		t.Errorf("CA cert volume diff: %s", diff.PrintWantGot(d))
+	}
+}
+
+func assertCACertMount(t *testing.T, container corev1.Container) {
+	t.Helper()
+
+	var gotMount *corev1.VolumeMount
+	for i := range container.VolumeMounts {
+		if container.VolumeMounts[i].Name == "tekton-ca-cert" {
+			gotMount = &container.VolumeMounts[i]
+			break
+		}
+	}
+	if gotMount == nil {
+		t.Fatalf("expected CA cert volumeMount on container %q", container.Name)
+	}
+
+	wantMount := corev1.VolumeMount{Name: "tekton-ca-cert", MountPath: "/etc/config-registry-cert", ReadOnly: true}
+	if d := cmp.Diff(wantMount, *gotMount); d != "" {
+		t.Errorf("CA cert volumeMount diff for %q: %s", container.Name, diff.PrintWantGot(d))
+	}
+}
+
+func findStepContainers(t *testing.T, pod *corev1.Pod) []corev1.Container {
+	t.Helper()
+
+	var stepContainers []corev1.Container
+	for _, c := range pod.Spec.Containers {
+		if strings.HasPrefix(c.Name, "step-") {
+			stepContainers = append(stepContainers, c)
+		}
+	}
+	if len(stepContainers) == 0 {
+		t.Fatalf("expected at least one step container")
+	}
+	return stepContainers
+}
+
+func TestBuild_CACertInjectionEnabled_AddsVolume(t *testing.T) {
+	got := buildCACertInjectionPod(t, map[string]string{"enable-ca-cert-injection": "true"}, []v1.Step{{
+		Name:    "first",
+		Image:   "image",
+		Command: []string{"cmd"},
+	}})
+
+	assertCACertVolume(t, got)
+}
+
+func TestCACertInjection_Enabled(t *testing.T) {
+	got := buildCACertInjectionPod(t, map[string]string{"enable-ca-cert-injection": "true"}, []v1.Step{{
+		Name:    "first",
+		Image:   "image",
+		Command: []string{"cmd"},
+	}, {
+		Name:    "second",
+		Image:   "image",
+		Command: []string{"cmd"},
+	}})
+
+	assertCACertVolume(t, got)
+
+	stepContainers := findStepContainers(t, got)
+	if len(stepContainers) != 2 {
+		t.Fatalf("expected 2 step containers, got %d", len(stepContainers))
+	}
+
+	for _, c := range stepContainers {
+		assertCACertMount(t, c)
+
+		lastSSLCertFile := ""
+		foundSSLCertFile := false
+		for _, e := range c.Env {
+			if e.Name == "SSL_CERT_FILE" {
+				lastSSLCertFile = e.Value
+				foundSSLCertFile = true
+			}
+		}
+		if !foundSSLCertFile {
+			t.Fatalf("expected SSL_CERT_FILE env var on container %q", c.Name)
+		}
+		if d := cmp.Diff("/etc/config-registry-cert/cert", lastSSLCertFile); d != "" {
+			t.Errorf("last SSL_CERT_FILE env diff for %q: %s", c.Name, diff.PrintWantGot(d))
+		}
+	}
+}
+
+func TestCACertInjection_Disabled(t *testing.T) {
+	tcs := []struct {
+		name         string
+		featureFlags map[string]string
+	}{
+		{name: "feature disabled", featureFlags: map[string]string{"enable-ca-cert-injection": "false"}},
+		{name: "feature flag unset", featureFlags: nil},
+	}
+
+	for _, tc := range tcs {
+		t.Run(tc.name, func(t *testing.T) {
+			got := buildCACertInjectionPod(t, tc.featureFlags, []v1.Step{{
+				Name:    "first",
+				Image:   "image",
+				Command: []string{"cmd"},
+			}})
+
+			foundCACertVolume := false
+			for i := range got.Spec.Volumes {
+				if got.Spec.Volumes[i].Name == "tekton-ca-cert" {
+					foundCACertVolume = true
+				}
+			}
+			if foundCACertVolume {
+				t.Errorf("did not expect tekton-ca-cert volume")
+			}
+
+			stepContainers := findStepContainers(t, got)
+			if len(stepContainers) != 1 {
+				t.Fatalf("expected exactly 1 step container, got %d", len(stepContainers))
+			}
+			stepContainer := stepContainers[0]
+
+			foundCACertMount := false
+			for i := range stepContainer.VolumeMounts {
+				if stepContainer.VolumeMounts[i].Name == "tekton-ca-cert" {
+					foundCACertMount = true
+				}
+			}
+			if foundCACertMount {
+				t.Errorf("did not expect tekton-ca-cert volumeMount on step container")
+			}
+
+			foundSSLCertFile := false
+			for _, e := range stepContainer.Env {
+				if e.Name == "SSL_CERT_FILE" {
+					foundSSLCertFile = true
+				}
+			}
+			if foundSSLCertFile {
+				t.Errorf("did not expect SSL_CERT_FILE env var on step container")
+			}
+		})
+	}
+}
+
+func TestCACertInjection_UserEnvWins(t *testing.T) {
+	got := buildCACertInjectionPod(t, map[string]string{"enable-ca-cert-injection": "true"}, []v1.Step{{
+		Name:    "first",
+		Image:   "image",
+		Command: []string{"cmd"},
+		Env: []corev1.EnvVar{{
+			Name:  "SSL_CERT_FILE",
+			Value: "/custom/cert.pem",
+		}},
+	}})
+
+	assertCACertVolume(t, got)
+
+	stepContainers := findStepContainers(t, got)
+	if len(stepContainers) != 1 {
+		t.Fatalf("expected exactly 1 step container, got %d", len(stepContainers))
+	}
+	stepContainer := stepContainers[0]
+
+	assertCACertMount(t, stepContainer)
+
+	lastSSLCertFile := ""
+	foundSSLCertFile := false
+	for _, e := range stepContainer.Env {
+		if e.Name == "SSL_CERT_FILE" {
+			lastSSLCertFile = e.Value
+			foundSSLCertFile = true
+		}
+	}
+	if !foundSSLCertFile {
+		t.Fatalf("expected SSL_CERT_FILE env var on step container")
+	}
+	if d := cmp.Diff("/custom/cert.pem", lastSSLCertFile); d != "" {
+		t.Errorf("last SSL_CERT_FILE env diff: %s", diff.PrintWantGot(d))
 	}
 }

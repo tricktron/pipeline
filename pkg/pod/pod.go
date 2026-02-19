@@ -167,6 +167,22 @@ func (b *Builder) Build(ctx context.Context, taskRun *v1.TaskRun, taskSpec v1.Ta
 	// Add our implicit volumes first, so they can be overridden by the user if they prefer.
 	volumes = append(volumes, implicitVolumes...)
 	volumeMounts = append(volumeMounts, implicitVolumeMounts...)
+	if featureFlags.EnableCACertInjection {
+		optional := true
+		volumes = append(volumes, corev1.Volume{
+			Name: "tekton-ca-cert",
+			VolumeSource: corev1.VolumeSource{ConfigMap: &corev1.ConfigMapVolumeSource{
+				LocalObjectReference: corev1.LocalObjectReference{Name: "config-registry-cert"},
+				Optional:             &optional,
+			}},
+		})
+		volumeMounts = append(volumeMounts, corev1.VolumeMount{
+			Name:      "tekton-ca-cert",
+			MountPath: "/etc/config-registry-cert",
+			ReadOnly:  true,
+		})
+		implicitEnvVars = append(implicitEnvVars, corev1.EnvVar{Name: "SSL_CERT_FILE", Value: "/etc/config-registry-cert/cert"})
+	}
 
 	// Create Volumes and VolumeMounts for any credentials found in annotated
 	// Secrets, along with any arguments needed by Step entrypoints to process
